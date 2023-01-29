@@ -14,14 +14,18 @@ use crate::color::Color;
 
 pub struct Graph {
     vertices: HashSet<i32>,
-    adjacent: HashMap<i32, HashSet<i32>>,
+    // [1, 2, 5, 7, 16, 23]
+    adjacent: HashMap<i32, HashSet<i32>>, // 1->[2, 5, 7], 5->[16, 23]
 
     color: HashMap<i32, Color>,
+    // 1->White, 5->Gray
     distance: HashMap<i32, i32>,
-    pred: HashMap<i32, i32>,
+    // 1->0, 5->1, 16->2
+    pred: HashMap<i32, i32>, // 5->1, 2->1, 16->5
 }
 
 impl Graph {
+    /// New empty graph
     pub fn build_graph() -> Self {
         Self {
             vertices: HashSet::new(),
@@ -33,6 +37,7 @@ impl Graph {
         }
     }
 
+    /// Reset color and distance for each vertex
     fn bleach(&mut self) {
         for v in &self.vertices {
             self.color.insert(*v, Color::White);
@@ -40,12 +45,14 @@ impl Graph {
         }
     }
 
+    /// Add a new Node to the vertices list
     fn add_node(&mut self, i: i32) {
         if !self.vertices.contains(&i) {
             self.vertices.insert(i);
         }
     }
 
+    /// Add a new Edge between 2 vertices
     pub fn add_edge(&mut self, from: i32, to: i32) {
         self.add_node(to);
 
@@ -63,6 +70,7 @@ impl Graph {
         }
     }
 
+    /// Breadth-first search (BFS) is an algorithm for searching a tree data structure for a node that satisfies a given property.
     pub fn bfs(&mut self, s: i32) {
         self.bleach();
 
