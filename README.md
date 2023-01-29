@@ -1,1 +1,1 @@
-# Parallel-algorithms-and-data-structures
+# Parallel algorithms and data structures
