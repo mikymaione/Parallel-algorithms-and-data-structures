@@ -13,15 +13,24 @@ use std::collections::{HashMap, HashSet, VecDeque};
 use crate::color::Color;
 
 pub struct Graph {
-    vertices: HashSet<i32>,
-    adjacent: HashMap<i32, HashSet<i32>>,
+    // [1, 2, 5, 7, 16, 23]
+    vertices: HashSet<u64>,
 
-    color: HashMap<i32, Color>,
-    distance: HashMap<i32, i32>,
-    pred: HashMap<i32, i32>,
+    // 1->[2, 5, 7], 5->[16, 23]
+    adjacent: HashMap<u64, HashSet<u64>>,
+
+    // 1->White, 5->Gray
+    color: HashMap<u64, Color>,
+
+    // 1->0, 5->1, 16->2
+    distance: HashMap<u64, u64>,
+
+    // 5->1, 2->1, 16->5
+    pred: HashMap<u64, u64>,
 }
 
 impl Graph {
+    /// New empty graph
     pub fn build_graph() -> Self {
         Self {
             vertices: HashSet::new(),
@@ -33,6 +42,7 @@ impl Graph {
         }
     }
 
+    /// Reset color and distance for each vertex
     fn bleach(&mut self) {
         for v in &self.vertices {
             self.color.insert(*v, Color::White);
@@ -40,38 +50,45 @@ impl Graph {
         }
     }
 
-    fn add_node(&mut self, i: i32) {
+    /// Add a new Node to the vertices list
+    pub fn add_node(&mut self, i: u64) {
         if !self.vertices.contains(&i) {
             self.vertices.insert(i);
         }
     }
 
-    pub fn add_edge(&mut self, from: i32, to: i32) {
+    /// Add a new Edge between 2 vertices
+    pub fn add_edge(&mut self, from: u64, to: u64) {
         self.add_node(to);
 
         match self.adjacent.get_mut(&from) {
+            // add a new neighbor to the list
             Some(l) =>
                 l.insert(to),
 
-            None =>
+            // add the first neighbor to the list
+            _ =>
                 self.adjacent.insert(from, HashSet::from([to]))
                     .is_some(),
         };
 
+        // create an empty neighbors list
         if !self.adjacent.contains_key(&to) {
             self.adjacent.insert(to, HashSet::new());
         }
     }
 
-    pub fn bfs(&mut self, s: i32) {
+    /// Breadth-first search (BFS) is an algorithm for searching a tree data structure for a node that satisfies a given property.
+    pub fn bfs(&mut self, s: u64) {
         self.bleach();
 
+        // create a Queue
         let mut q = VecDeque::from([s]);
 
         self.color.insert(s, Color::Gray);
         self.distance.insert(s, 0);
 
-        while let Some(v) = q.pop_front() {
+        while let Some(v) = q.pop_front() { // dequeue
             for w in &self.adjacent[&v] {
                 match self.color[&w] {
                     Color::White => {
