@@ -14,19 +14,19 @@ use crate::color::Color;
 
 pub struct Graph {
     // [1, 2, 5, 7, 16, 23]
-    vertices: HashSet<i32>,
+    vertices: HashSet<u64>,
 
     // 1->[2, 5, 7], 5->[16, 23]
-    adjacent: HashMap<i32, HashSet<i32>>,
+    adjacent: HashMap<u64, HashSet<u64>>,
 
     // 1->White, 5->Gray
-    color: HashMap<i32, Color>,
+    color: HashMap<u64, Color>,
 
     // 1->0, 5->1, 16->2
-    distance: HashMap<i32, i32>,
+    distance: HashMap<u64, u64>,
 
     // 5->1, 2->1, 16->5
-    pred: HashMap<i32, i32>,
+    pred: HashMap<u64, u64>,
 }
 
 impl Graph {
@@ -51,14 +51,14 @@ impl Graph {
     }
 
     /// Add a new Node to the vertices list
-    pub fn add_node(&mut self, i: i32) {
+    pub fn add_node(&mut self, i: u64) {
         if !self.vertices.contains(&i) {
             self.vertices.insert(i);
         }
     }
 
     /// Add a new Edge between 2 vertices
-    pub fn add_edge(&mut self, from: i32, to: i32) {
+    pub fn add_edge(&mut self, from: u64, to: u64) {
         self.add_node(to);
 
         match self.adjacent.get_mut(&from) {
@@ -67,7 +67,7 @@ impl Graph {
                 l.insert(to),
 
             // add the first neighbor to the list
-            None =>
+            _ =>
                 self.adjacent.insert(from, HashSet::from([to]))
                     .is_some(),
         };
@@ -79,7 +79,7 @@ impl Graph {
     }
 
     /// Breadth-first search (BFS) is an algorithm for searching a tree data structure for a node that satisfies a given property.
-    pub fn bfs(&mut self, s: i32) {
+    pub fn bfs(&mut self, s: u64) {
         self.bleach();
 
         // create a Queue
