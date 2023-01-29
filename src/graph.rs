@@ -13,15 +13,20 @@ use std::collections::{HashMap, HashSet, VecDeque};
 use crate::color::Color;
 
 pub struct Graph {
-    vertices: HashSet<i32>,
     // [1, 2, 5, 7, 16, 23]
-    adjacent: HashMap<i32, HashSet<i32>>, // 1->[2, 5, 7], 5->[16, 23]
+    vertices: HashSet<i32>,
 
-    color: HashMap<i32, Color>,
+    // 1->[2, 5, 7], 5->[16, 23]
+    adjacent: HashMap<i32, HashSet<i32>>,
+
     // 1->White, 5->Gray
-    distance: HashMap<i32, i32>,
+    color: HashMap<i32, Color>,
+
     // 1->0, 5->1, 16->2
-    pred: HashMap<i32, i32>, // 5->1, 2->1, 16->5
+    distance: HashMap<i32, i32>,
+
+    // 5->1, 2->1, 16->5
+    pred: HashMap<i32, i32>,
 }
 
 impl Graph {
@@ -46,7 +51,7 @@ impl Graph {
     }
 
     /// Add a new Node to the vertices list
-    fn add_node(&mut self, i: i32) {
+    pub fn add_node(&mut self, i: i32) {
         if !self.vertices.contains(&i) {
             self.vertices.insert(i);
         }
@@ -57,14 +62,17 @@ impl Graph {
         self.add_node(to);
 
         match self.adjacent.get_mut(&from) {
+            // add a new neighbor to the list
             Some(l) =>
                 l.insert(to),
 
+            // add the first neighbor to the list
             None =>
                 self.adjacent.insert(from, HashSet::from([to]))
                     .is_some(),
         };
 
+        // create an empty neighbors list
         if !self.adjacent.contains_key(&to) {
             self.adjacent.insert(to, HashSet::new());
         }
@@ -74,12 +82,13 @@ impl Graph {
     pub fn bfs(&mut self, s: i32) {
         self.bleach();
 
+        // create a Queue
         let mut q = VecDeque::from([s]);
 
         self.color.insert(s, Color::Gray);
         self.distance.insert(s, 0);
 
-        while let Some(v) = q.pop_front() {
+        while let Some(v) = q.pop_front() { // dequeue
             for w in &self.adjacent[&v] {
                 match self.color[&w] {
                     Color::White => {
