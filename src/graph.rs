@@ -8,37 +8,37 @@ The above copyright notice and this permission notice shall be included in all c
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-use std::collections::{HashMap, HashSet, VecDeque};
+use std::collections::{BTreeMap, BTreeSet, VecDeque};
 
 use crate::color::Color;
 
 pub struct Graph {
     // [1, 2, 5, 7, 16, 23]
-    vertices: HashSet<usize>,
+    vertices: BTreeSet<usize>,
 
     // 1->[2, 5, 7], 5->[16, 23]
-    adjacent: HashMap<usize, HashSet<usize>>,
+    adjacent: BTreeMap<usize, BTreeSet<usize>>,
 
     // 1->White, 5->Gray
-    color: HashMap<usize, Color>,
+    color: BTreeMap<usize, Color>,
 
     // 1->0, 5->1, 16->2
-    distance: HashMap<usize, usize>,
+    distance: BTreeMap<usize, usize>,
 
     // 5->1, 2->1, 16->5
-    pred: HashMap<usize, usize>,
+    pred: BTreeMap<usize, usize>,
 }
 
 impl Graph {
     /// New empty graph
     pub fn new() -> Self {
         Self {
-            vertices: HashSet::new(),
-            adjacent: HashMap::new(),
+            vertices: BTreeSet::new(),
+            adjacent: BTreeMap::new(),
 
-            color: HashMap::new(),
-            distance: HashMap::new(),
-            pred: HashMap::new(),
+            color: BTreeMap::new(),
+            distance: BTreeMap::new(),
+            pred: BTreeMap::new(),
         }
     }
 
@@ -68,13 +68,13 @@ impl Graph {
 
             // add the first neighbor to the list
             _ =>
-                self.adjacent.insert(from, HashSet::from([to]))
+                self.adjacent.insert(from, BTreeSet::from([to]))
                     .is_some(),
         };
 
         // create an empty neighbors list
         if !self.adjacent.contains_key(&to) {
-            self.adjacent.insert(to, HashSet::new());
+            self.adjacent.insert(to, BTreeSet::new());
         }
     }
 
