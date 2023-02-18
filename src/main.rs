@@ -14,11 +14,11 @@ mod graph;
 mod color;
 
 fn main() {
-    let mut g1 = Graph::build_graph();
+    let mut g = Graph::new();
 
-    g1.add_edge(1, 5);
-    g1.add_edge(1, 6);
-    g1.add_edge(2, 3);
+    g.add_edge(1, 5);
+    g.add_edge(1, 6);
+    g.add_edge(2, 3);
 
-    g1.bfs(1);
+    g.bfs(1);
 }

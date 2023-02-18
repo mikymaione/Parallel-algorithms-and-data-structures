@@ -14,24 +14,24 @@ use crate::color::Color;
 
 pub struct Graph {
     // [1, 2, 5, 7, 16, 23]
-    vertices: HashSet<u64>,
+    vertices: HashSet<usize>,
 
     // 1->[2, 5, 7], 5->[16, 23]
-    adjacent: HashMap<u64, HashSet<u64>>,
+    adjacent: HashMap<usize, HashSet<usize>>,
 
     // 1->White, 5->Gray
-    color: HashMap<u64, Color>,
+    color: HashMap<usize, Color>,
 
     // 1->0, 5->1, 16->2
-    distance: HashMap<u64, u64>,
+    distance: HashMap<usize, usize>,
 
     // 5->1, 2->1, 16->5
-    pred: HashMap<u64, u64>,
+    pred: HashMap<usize, usize>,
 }
 
 impl Graph {
     /// New empty graph
-    pub fn build_graph() -> Self {
+    pub fn new() -> Self {
         Self {
             vertices: HashSet::new(),
             adjacent: HashMap::new(),
@@ -51,14 +51,14 @@ impl Graph {
     }
 
     /// Add a new Node to the vertices list
-    pub fn add_node(&mut self, i: u64) {
+    pub fn add_node(&mut self, i: usize) {
         if !self.vertices.contains(&i) {
             self.vertices.insert(i);
         }
     }
 
     /// Add a new Edge between 2 vertices
-    pub fn add_edge(&mut self, from: u64, to: u64) {
+    pub fn add_edge(&mut self, from: usize, to: usize) {
         self.add_node(to);
 
         match self.adjacent.get_mut(&from) {
@@ -79,7 +79,7 @@ impl Graph {
     }
 
     /// Breadth-first search (BFS) is an algorithm for searching a tree data structure for a node that satisfies a given property.
-    pub fn bfs(&mut self, s: u64) {
+    pub fn bfs(&mut self, s: usize) {
         self.bleach();
 
         // create a Queue
