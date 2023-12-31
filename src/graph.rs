@@ -7,7 +7,6 @@ Permission is hereby granted, free of charge, to any person obtaining a copy of 
 The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
-
 use std::collections::{BTreeMap, BTreeSet, VecDeque};
 
 use crate::color::Color;
@@ -44,9 +43,9 @@ impl Graph {
 
     /// Reset color and distance for each vertex
     fn bleach(&mut self) {
-        for v in &self.vertices {
-            self.color.insert(*v, Color::White);
-            self.distance.insert(*v, 0);
+        for &v in &self.vertices {
+            self.color.insert(v, Color::White);
+            self.distance.insert(v, 0);
         }
     }
 
@@ -67,7 +66,7 @@ impl Graph {
                 l.insert(to),
 
             // add the first neighbor to the list
-            _ =>
+            None =>
                 self.adjacent.insert(from, BTreeSet::from([to]))
                     .is_some(),
         };
@@ -89,21 +88,35 @@ impl Graph {
         self.distance.insert(s, 0);
 
         while let Some(v) = q.pop_front() { // dequeue
-            for w in &self.adjacent[&v] {
+            for &w in &self.adjacent[&v] {
                 match self.color[&w] {
                     Color::White => {
-                        self.color.insert(*w, Color::Gray);
-                        self.distance.insert(*w, self.distance[&v] + 1);
-                        self.pred.insert(*w, v);
+                        self.color.insert(w, Color::Gray);
+                        self.distance.insert(w, self.distance[&v] + 1);
+                        self.pred.insert(w, v);
 
-                        q.push_back(*w); // enqueue
+                        q.push_back(w); // enqueue
                     }
 
-                    _ => {}
+                    Color::Gray |
+                    Color::Black => {}
                 }
             }
 
             self.color.insert(v, Color::Black);
+        }
+    }
+
+    /// Print all vertices
+    pub fn print(&self) {
+        for (n, d) in &self.distance {
+            let maybe_pred = if self.pred.contains_key(n) {
+                format!(" -> {}", self.pred[n])
+            } else {
+                "".to_string()
+            };
+
+            println!("#{n} ({d}){maybe_pred}");
         }
     }
 }
